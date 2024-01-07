@@ -60,12 +60,11 @@
             color: white;
         }
 
-        .btn.btn-warning:hover {
-            box-shadow: 2px 1px 2px 3px #99ccff;
-            background: #5900a6;
-            color: #fff;
-            transition: background-color 1.15s ease-in-out, border-color 1.15s ease-in-out, box-shadow 1.15s ease-in-out;
-        }
+        .btn {
+         /* Change this to your desired blue color */
+        color: #fff;
+        transition: background-color 1.15s ease-in-out, border-color 1.15s ease-in-out, box-shadow 1.15s ease-in-out;
+    }
       .nav-tabs .nav-link.active {
           background-color: transparent;
           border-color: #ddd;
@@ -125,7 +124,7 @@
             User Profile
         </header>
         <hr>
-    
+        <div class="profile-info headings">
         <div class="profile-info">
             <div class="row">
                 <div class="col-xs-12">
@@ -152,11 +151,88 @@
                 </div>
             </div>
         </div>
+      </div>
 
-        
+      <div class="text-center mt-3">
+        <button class="btn btn-primary" id="editProfileBtn" onclick="toggleEdit()" >Edit Profile</button>
+    </div>
+    
+      <!-- Edit Profile form -->
+      <form method="post" action="{% url 'edit_profile' %}" id="editProfileForm" style="display: none;">
+        {% csrf_token %}
+        <label for="new_first_name">First Name:</label>
+        <input type="text" name="new_first_name" value="{{ profile.0 }}" required><br>
+
+        <label for="new_last_name">Last Name:</label>
+        <input type="text" name="new_last_name" value="{{ profile.1 }}" required><br>
+
+        <label for="new_email">Email:</label>
+        <input type="email" name="new_email" value="{{ profile.2 }}" required><br>
+
+        <label for="new_gender">Gender:</label>
+        <input type="text" name="new_gender" value="{{ profile.4 }}" required><br>
+
+        <input type="submit" value="Save">
+    </form>
+</div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script>
+      function toggleEdit() {
+        var profileElements = document.querySelectorAll('.profile-info span');
+        var profileHeadings = document.querySelectorAll('.profile-info.headings label');
+        var editForm = document.getElementById('editProfileForm');
+        var editButton = document.getElementById('editProfileBtn');
 
+        for (var i = 0; i < profileElements.length; i++) {
+            profileElements[i].contentEditable = !profileElements[i].contentEditable;
+            profileElements[i].style.border = profileElements[i].contentEditable ? '1px solid #fff' : 'none';
+        }
+
+        for (var i = 0; i < profileHeadings.length; i++) {
+            profileHeadings[i].style.display = profileHeadings[i].style.display === 'none' ? 'block' : 'none';
+        }
+
+        if (editForm.style.display === 'none' || editForm.style.display === '') {
+            // If form is hidden, show it and hide profile elements
+            editForm.style.display = 'block';
+            editButton.style.display = 'none';
+            for (var i = 0; i < profileElements.length; i++) {
+                profileElements[i].style.display = 'none';
+            }
+        } else {
+            // If form is visible, hide it and show profile elements
+            editForm.style.display = 'none';
+            editButton.style.display = 'block';
+            for (var i = 0; i < profileElements.length; i++) {
+                profileElements[i].style.display = 'block';
+            }
+        }
+    }
+    //   function toggleEdit() {
+    //     var profileElements = document.querySelectorAll('.profile-info span');
+    //     var editForm = document.getElementById('editProfileForm');
+
+    //     for (var i = 0; i < profileElements.length; i++) {
+    //         profileElements[i].contentEditable = !profileElements[i].contentEditable;
+    //         profileElements[i].style.border = profileElements[i].contentEditable ? '1px solid #fff' : 'none';
+    //     }
+
+    //     if (editForm.style.display === 'none' || editForm.style.display === '') {
+    //         // If form is hidden, show it and hide profile elements
+    //         editForm.style.display = 'block';
+    //         for (var i = 0; i < profileElements.length; i++) {
+    //             profileElements[i].style.display = 'none';
+    //         }
+    //     } else {
+    //         // If form is visible, hide it and show profile elements
+    //         editForm.style.display = 'none';
+    //         for (var i = 0; i < profileElements.length; i++) {
+    //             profileElements[i].style.display = 'block';
+    //         }
+    //     }
+    // }
+  </script>
 </body>
 
 </html>

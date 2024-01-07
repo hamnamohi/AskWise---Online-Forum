@@ -136,28 +136,33 @@ def logout(request):
 
 @csrf_exempt
 def ask_view(request):
+    global userinfo
+    if not userinfo:
+        return redirect('/login')
     if request.method == 'POST':
         question_title = request.POST.get('questionTitle')
         question_details = request.POST.get('questionDetails')
         # tags = request.POST.get('tags').split(',')
         tags = [tag.lower() for tag in request.POST.get('tags').split(',')]
-
+        
         with sqlite3.connect('datbase.db') as conn:
             cursor = conn.cursor()
             # Save the question to the topics table
             cursor.execute("INSERT INTO topic (title, details, email) VALUES (?, ?, ?)",
-                           (question_title, question_details, useremail)) 
+                        (question_title, question_details, useremail)) 
             # Retrieve the inserted topic_id
             topic_id = cursor.lastrowid
             # Save each tag along with the corresponding topic_id to the tags table
             for tag in tags:
                 cursor.execute("INSERT INTO tags (topic_id, tag) VALUES (?, ?)",
-                               (topic_id, tag.strip()))
+                            (topic_id, tag.strip()))
             conn.commit()
 
         return redirect('home')  # Redirect to the homepage after submitting the question
 
     return render(request, 'ask.html')
+        
+
 
 def profile(request):
     global userinfo, useremail
@@ -170,6 +175,26 @@ def profile(request):
         return render(request, 'profile.html', {'profile': user_det})
     else:
         return redirect('/login')
+
+def edit_profile(request):
+    global userinfo, useremail
+    if request.method == 'POST':
+        # Retrieve updated profile data from the form
+        new_first_name = request.POST.get('new_first_name')
+        new_last_name = request.POST.get('new_last_name')
+        new_email = request.POST.get('new_email')
+        new_gender = request.POST.get('new_gender')
+        with sqlite3.connect('datbase.db') as conn:
+            cursor = conn.cursor()
+            cursor.execute(""" UPDATE users SET
+                fname = ?,
+                lname = ?,
+                email = ?,
+                gender = ?
+            WHERE
+                email = ?""",(new_first_name,new_last_name,new_email,new_gender,useremail))
+        conn.commit()
+    return redirect('profile')
 def mytopics_view(request):
     global userinfo, useremail
     if userinfo:
